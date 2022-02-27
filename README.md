@@ -8,6 +8,8 @@
 
 核心参考了[GradleKotlinConverter](https://github.com/bernaferrari/GradleKotlinConverter),不过原版有一定的错误,比如把orj.jetbrains.kotlin.android转换为了jetbrains.kotlin.andro,硬生生把id去掉了.还有一些新的参数无法转换例如compose true等等.也欢迎使用者提供反馈.
 
+使用jetpack compose desktop开发,在此表示感谢. ~kotlin是世界上最好的语言~ 暴论
+
 ### 开源协议
 
 许可协议Mozilla
