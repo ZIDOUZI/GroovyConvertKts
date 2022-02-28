@@ -21,6 +21,7 @@ import zdz.groovyconvertkts.ExtendFileDialog
 import zdz.groovyconvertkts.Title
 import zdz.groovyconvertkts.core.convert
 import zdz.groovyconvertkts.core.processFile
+import zdz.groovyconvertkts.core.writeToClipboard
 import java.io.File
 import javax.swing.filechooser.FileNameExtensionFilter
 
@@ -66,17 +67,19 @@ fun MainScreen(ws: MainWindowState) {
         }
 
 
-        Button(onClick = { convert(value) }) {
+        Button(onClick = { writeToClipboard(convert(value)) }) {
             Text("转换输入框代码")
         }
         TextField(value = value, onValueChange = { value = it })
 
-        Text(text = "tip: 选择文件夹时请选择src目录哦", color = Color.Gray, fontSize = 12.sp)
+        Text(text = "tip1: 选择文件夹时请选择src目录哦", color = Color.Gray, fontSize = 12.sp)
+        Text(text = "tip2: 转换输入后会直接输出到剪贴板", color = Color.Gray, fontSize = 12.sp)
     }
 
     if (ws.isAwaiting) {
         ExtendFileDialog(
             title = if (ws.selectFolder) "选择文件夹" else "选择文件",
+            iconPath = "Kotlin.ico",
             dir = ws.path,
             dispose = { ws.isAwaiting = false },
             chooseMode = if (ws.selectFolder) ChooseMode.FOLDER else ChooseMode.FILES,

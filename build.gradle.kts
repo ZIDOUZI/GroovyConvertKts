@@ -1,3 +1,5 @@
+@file:Suppress("SpellCheckingInspection")
+
 import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -7,8 +9,9 @@ plugins {
     id("org.jetbrains.compose") version "1.0.0"
 }
 
-group = "me.dou"
+group = "zdz.dou"
 version = "1.0"
+val customSourceSet = sourceSets.create("customSourceSet")
 
 repositories {
     google()
@@ -26,11 +29,16 @@ tasks.withType<KotlinCompile> {
 
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "zdz.groovyconvertkts.ui.main.MainWindowKt"
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Msi, TargetFormat.Exe)
             packageName = "GroovyConvertKts"
             packageVersion = "1.0.0"
+            appResourcesRootDir.set(project.file("\\src\\main\\resources\\"))
+            windows {
+                iconFile.set(project.file("\\src\\main\\resources\\kotlin.ico"))
+            }
+            from(customSourceSet)
         }
     }
 }

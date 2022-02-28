@@ -9,44 +9,28 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 
-fun processClipboard() {
+fun getClipboardContents(): String {
+
     print("[${currentTimeFormatted()}] - Trying to open clipboard.. ")
-    var clipboard = Toolkit.getDefaultToolkit().systemClipboard
+
+    val clipboard = Toolkit.getDefaultToolkit().systemClipboard
     val contents = clipboard.getContents(null)
     val hasTransferableText = contents != null && contents.isDataFlavorSupported(DataFlavor.stringFlavor)
+
     val result =
         if (hasTransferableText) contents?.getTransferData(DataFlavor.stringFlavor) as? String ?: "" else ""
+
     println("Success!")
-    ///////读写分界线
-    val selection = StringSelection(convert(result))
-    clipboard = Toolkit.getDefaultToolkit().systemClipboard
-    print("[${currentTimeFormatted()}] --- Saving to clipboard.. ")
-    clipboard.setContents(selection, selection)
+    return result
 }
 
-fun processFile(file: File) {
-    print("[${currentTimeFormatted()}] - Trying to open file.. ")
-    if (!file.exists()) {
-        println("Didn't find a file in the path you specified. Exiting...")
-    }
-    println("Success!")
-    ////////读写分界线
-    val fileIsAlreadyKts = file.path.takeLast(4) == ".kts"
+fun writeToClipboard(text: String) {
+    val selection = StringSelection(text)
+    val clipboard = Toolkit.getDefaultToolkit().getSystemClipboard()
 
-    if (fileIsAlreadyKts) {
-        println(
-            "\n### ### ### Warning! The script will overrite ${file.path}, since it ends with \".kts\"".red() +
-                    "\n### ### ### Gradle might get crazy and all red, so you might want to \"gradle build\"\n".red()
-        )
-    }
+    print("[${currentTimeFormatted()}] --- Saving to clipboard.. ")
 
-    val newFilePath = if (fileIsAlreadyKts) file.path else "${file.path}.kts"
-
-    println("[${currentTimeFormatted()}] --- Saving to: \"$newFilePath\".. ")
-
-    val newFile = File(newFilePath)
-    newFile.createNewFile()
-    newFile.writeText(convert(file.readText()))
+    clipboard.setContents(selection, selection)
 }
 
 fun String.convertNestedTypes(buildTypes: String, named: String): String {
@@ -119,13 +103,38 @@ fun String.getExpressionBlock(
 
 fun currentTimeFormatted(): String = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
 
+fun processFile(file: File) {
+    print("[${currentTimeFormatted()}] - Trying to open file.. ")
+    if (!file.exists()) {
+        println("Didn't find a file in the path you specified. Exiting...")
+    }
+    println("Success!")
+    ////////读写分界线
+    val fileIsAlreadyKts = file.path.takeLast(4) == ".kts"
+
+    if (fileIsAlreadyKts) {
+        println(
+            "\n### ### ### Warning! The script will overrite ${file.path}, since it ends with \".kts\"".red() +
+                    "\n### ### ### Gradle might get crazy and all red, so you might want to \"gradle build\"\n".red()
+        )
+    }
+
+    val newFilePath = if (fileIsAlreadyKts) file.path else "${file.path}.kts"
+
+    println("[${currentTimeFormatted()}] --- Saving to: \"$newFilePath\".. ")
+
+    val newFile = File(newFilePath)
+    newFile.createNewFile()
+    newFile.writeText(convert(file.readText()))
+}
+
 // from https://github.com/importre/crayon
+fun String.bold() = "\u001b[1m${this}\u001b[0m"
+fun String.cyan() = "\u001b[36m${this}\u001b[0m"
+fun String.green() = "\u001b[32m${this}\u001b[0m"
+fun String.magenta() = "\u001b[35m${this}\u001b[0m"
 fun String.red() = "\u001b[31m${this}\u001b[0m"
-//fun String.bold() = "\u001b[1m${this}\u001b[0m"
-//fun String.cyan() = "\u001b[36m${this}\u001b[0m"
-//fun String.green() = "\u001b[32m${this}\u001b[0m"
-//fun String.magenta() = "\u001b[35m${this}\u001b[0m"
-//fun String.yellow() = "\u001b[33m${this}\u001b[0m"
+fun String.yellow() = "\u001b[33m${this}\u001b[0m"
 
 fun convert(text: String): String {
 

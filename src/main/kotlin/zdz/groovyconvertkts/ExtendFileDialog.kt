@@ -1,19 +1,20 @@
 package zdz.groovyconvertkts
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.window.AwtWindow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.swing.Swing
+import java.awt.FileDialog
 import java.io.File
+import javax.imageio.ImageIO
 import javax.swing.JFileChooser
+import javax.swing.JFrame
 import javax.swing.LookAndFeel
 import javax.swing.UIManager
 import javax.swing.filechooser.FileFilter
-import javax.swing.filechooser.FileNameExtensionFilter
 import javax.swing.filechooser.FileSystemView.getFileSystemView
-import androidx.compose.ui.window.AwtWindow
-import java.awt.FileDialog
 
 /**
  * 根据JFileChooser改造而来的compose元件
@@ -35,6 +36,7 @@ import java.awt.FileDialog
 @Composable
 fun ExtendFileDialog(
     title: String = "untitled",
+    iconPath: String? = null,//TODO: 实现图标修改
     dir: String? = null,
     mode: Mode = Mode.LOAD,
     chooseMode: ChooseMode = ChooseMode.FILE,
@@ -51,11 +53,14 @@ fun ExtendFileDialog(
     lookAndFeel?.let { UIManager.setLookAndFeel(it) }
         ?: UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
+    val f = JFrame(title)
+    f.iconImage = ImageIO.read(File(""))
     val j = JFileChooser(dir ?: getFileSystemView().defaultDirectory.path)
     j.dialogTitle = title
     j.isMultiSelectionEnabled = chooseMode.value % 2 != 0
     j.fileSelectionMode = chooseMode.value / 2
     j.dragEnabled = enableDrag
+
     if (chooseMode.value !in 2..3) {
         j.fileFilter = fileFilter
     }//TODO: 检测是否有异常

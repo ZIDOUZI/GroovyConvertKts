@@ -62,7 +62,7 @@ fun main() = application {
                     property.setProperty("notification", ws.turnoffNotification.toString())
 
                     property.store(out, "change the property")
-                    print("保存配置成功")
+                    print("\n保存配置成功")
                 } catch (e: InterruptedException) {
                     e.printStackTrace()
                 }
@@ -70,7 +70,7 @@ fun main() = application {
             exitApplication()
         },
         title = "Gradle 转换 Kts",
-        icon = painterResource("kotlin.ico")
+        icon = painterResource("Kotlin.ico")
     ) {
         ws.rootComposeWindow = window
         App(ws)
