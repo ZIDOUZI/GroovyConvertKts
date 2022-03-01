@@ -617,3 +617,15 @@ fun convert(text: String): String {
 
     return convertedText
 }
+
+fun changeToLibrary(text: String): String {
+
+    fun String.deleteApplicationID(): String =
+        this.replace(Regex("applicationId = \"([-A-Za-z0-9_]+)\"\n"), "")
+
+    fun String.changeToLib(): String = this.replace("id(\"com.android.application\")", "id(\"com.android.library\")")
+
+    return text.deleteApplicationID()
+        .changeToLib()
+
+}
