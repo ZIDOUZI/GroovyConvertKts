@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Notification
+import androidx.compose.ui.window.rememberNotification
 import zdz.groovyconvertkts.ChooseMode
 import zdz.groovyconvertkts.ExtendFileDialog
 import zdz.groovyconvertkts.Title
@@ -72,7 +73,7 @@ fun MainScreen(ws: MainWindowState) {
         }
         TextField(value = value, onValueChange = { value = it })
 
-        Text(text = "tip1: 选择文件夹时请选择src目录哦", color = Color.Gray, fontSize = 12.sp)
+        Text(text = "tip1: 选择文件夹时请选择root目录哦", color = Color.Gray, fontSize = 12.sp)
         Text(text = "tip2: 转换输入后会直接输出到剪贴板", color = Color.Gray, fontSize = 12.sp)
     }
 
@@ -100,7 +101,7 @@ fun MainScreen(ws: MainWindowState) {
                     ws.path = it.path.substring(0..it.path.lastIndexOf("\\"))
                     print(ws.path)
                 }
-                Notification("Groovy转换kts", "转换成功")
+                rememberNotification("Groovy转换kts", "转换成功")
             },
             negativeResult = { ws.path = it.path },
         )
