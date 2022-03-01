@@ -1,4 +1,6 @@
 # 项目排除路径
 /.gradle/
 /build/
+#测试文件所在位置,用于调试convert核心
+/src/test/kotlin/main.kt
 settings.properties

@@ -373,13 +373,13 @@ fun convert(text: String): String {
 
         val signing = "keyAlias|keyPassword|storeFile|storePassword"
         val other = "multiDexEnabled|correctErrorTypes|javaMaxHeapSize|jumboMode|dimension|useSupportLibrary"
-        val databinding = "dataBinding|viewBinding"
+        val dataBinding = "dataBinding|viewBinding"
         val defaultConfig =
             "applicationId|versionCode|versionName|testInstrumentationRunner|namespace|compileSdk|minSdk|targetSdk"
-        val compose = "compose|kotlinComposeExtensionVersion"
+        val compose = "compose|kotlinCompilerExtensionVersion"
         val negativeLookAhead = "(?!\\{)[^\\s]" // Don't want '{' as next word character
 
-        val versionExp = """($defaultConfig|$signing|$other|$databinding|$compose)\s*${negativeLookAhead}.*""".toRegex()
+        val versionExp = """($defaultConfig|$signing|$other|$dataBinding|$compose)\s+${negativeLookAhead}.*""".toRegex()
 
         return this.replace(versionExp) {
             val split = it.value.split(" ")
@@ -625,7 +625,15 @@ fun changeToLibrary(text: String): String {
 
     fun String.changeToLib(): String = this.replace("id(\"com.android.application\")", "id(\"com.android.library\")")
 
+    fun String.deleteVersionName(): String = this.replace(Regex("versionCode = .+\n"), "")
+
+    fun String.deleteVersionCode(): String = this.replace(Regex("versionCode = \\d+\n"), "")
+
     return text.deleteApplicationID()
         .changeToLib()
+        .deleteVersionName()
+        .deleteVersionCode()
 
 }
+
+//TODO: 项目名含有compose时会加等号
