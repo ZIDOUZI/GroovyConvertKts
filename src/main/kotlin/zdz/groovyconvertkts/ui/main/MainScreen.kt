@@ -101,7 +101,7 @@ fun MainScreen(ws: MainWindowState) {
                     ws.path = it.path.substring(0..it.path.lastIndexOf("\\"))
                     print(ws.path)
                 }
-                rememberNotification("Groovy转换kts", "转换成功")
+                Notification("Groovy转换kts", "转换成功")//TODO: 实现通知
             },
             negativeResult = { ws.path = it.path },
         )
