@@ -33,74 +33,6 @@ fun writeToClipboard(text: String) {
     clipboard.setContents(selection, selection)
 }
 
-fun String.convertNestedTypes(buildTypes: String, named: String): String {
-    return this.getExpressionBlock("$buildTypes\\s*\\{".toRegex()) { substring ->
-        substring.replace("\\S*\\s(?=\\{)".toRegex()) {
-            val valueWithoutWhitespace = it.value.replace(" ", "")
-            "$named(\"$valueWithoutWhitespace\") "
-        }
-    }
-}
-
-fun String.addIsToStr(blockTitle: String, transform: String): String {
-
-    val extensionsExp = "$blockTitle\\s*\\{[\\s\\S]*}".toRegex()
-
-    if (!extensionsExp.containsMatchIn(this)) return this
-
-    val typesExp = "$transform.*".toRegex()
-
-    return this.replace(typesExp) { matchResult ->
-
-        val split = matchResult.value.split(" ")
-
-        println("[AS] split:\n${split}")
-
-
-        // if there is more than one whitespace, the last().toIntOrNull() will find.
-        if (split.lastOrNull { it.isNotBlank() } != null) {
-            "is${split[0].replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }} = ${split.last()}"
-        } else {
-            matchResult.value
-        }
-    }
-}
-
-fun String.getExpressionBlock(
-    expression: Regex,
-    modifyResult: ((String) -> (String))
-): String {
-
-    val stringSize = this.count()
-
-    return expression.findAll(this)
-        .toList()
-        .foldRight(this) { matchResult, accString ->
-
-            val rangeStart = matchResult.range.last
-            var rangeEnd = stringSize
-            var count = 0
-
-            println("[DP] - range: ${matchResult.range} value: ${matchResult.value}")
-
-            for (item in rangeStart..stringSize) {
-                if (this[item] == '{') count += 1 else if (this[item] == '}') count -= 1
-                if (count == 0) {
-                    rangeEnd = item
-                    break
-                }
-            }
-
-            println("[DP] reading this block:\n${this.substring(rangeStart, rangeEnd)}")
-
-            val convertedStr = modifyResult.invoke(this.substring(rangeStart, rangeEnd))
-
-            println("[DP] outputing this block:\n${convertedStr}")
-
-            accString.replaceRange(rangeStart, rangeEnd, convertedStr)
-        }
-}
-
 fun currentTimeFormatted(): String = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
 
 fun processFile(file: File) {
@@ -232,6 +164,74 @@ fun convert(text: String): String {
             val (pluginId) = it.destructured
             // it identifies the plugin id and rebuilds the line.
             "apply(plugin = $pluginId)"
+        }
+    }
+
+    fun String.getExpressionBlock(
+        expression: Regex,
+        modifyResult: ((String) -> (String))
+    ): String {
+
+        val stringSize = this.count()
+
+        return expression.findAll(this)
+            .toList()
+            .foldRight(this) { matchResult, accString ->
+
+                val rangeStart = matchResult.range.last
+                var rangeEnd = stringSize
+                var count = 0
+
+                println("[DP] - range: ${matchResult.range} value: ${matchResult.value}")
+
+                for (item in rangeStart..stringSize) {
+                    if (this[item] == '{') count += 1 else if (this[item] == '}') count -= 1
+                    if (count == 0) {
+                        rangeEnd = item
+                        break
+                    }
+                }
+
+                println("[DP] reading this block:\n${this.substring(rangeStart, rangeEnd)}")
+
+                val convertedStr = modifyResult.invoke(this.substring(rangeStart, rangeEnd))
+
+                println("[DP] outputing this block:\n${convertedStr}")
+
+                accString.replaceRange(rangeStart, rangeEnd, convertedStr)
+            }
+    }
+
+    fun String.convertNestedTypes(buildTypes: String, named: String): String {
+        return this.getExpressionBlock("$buildTypes\\s*\\{".toRegex()) { substring ->
+            substring.replace("\\S*\\s(?=\\{)".toRegex()) {
+                val valueWithoutWhitespace = it.value.replace(" ", "")
+                "$named(\"$valueWithoutWhitespace\") "
+            }
+        }
+    }
+
+    fun String.addIsToStr(blockTitle: String, transform: String): String {
+
+        val extensionsExp = "$blockTitle\\s*\\{[\\s\\S]*}".toRegex()
+
+        if (!extensionsExp.containsMatchIn(this)) return this
+
+        val typesExp = "$transform.*".toRegex()
+
+        return this.replace(typesExp) { matchResult ->
+
+            val split = matchResult.value.split(" ")
+
+            println("[AS] split:\n${split}")
+
+
+            // if there is more than one whitespace, the last().toIntOrNull() will find.
+            if (split.lastOrNull { it.isNotBlank() } != null) {
+                "is${split[0].replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }} = ${split.last()}"
+            } else {
+                matchResult.value
+            }
         }
     }
 
