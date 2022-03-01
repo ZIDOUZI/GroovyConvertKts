@@ -12,7 +12,7 @@
 
 ### 开源协议
 
-许可协议Mozilla
+许可协议MIT
 
 [MIT](https://mit-license.org/)
 
