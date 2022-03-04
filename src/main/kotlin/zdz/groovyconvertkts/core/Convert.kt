@@ -573,6 +573,25 @@ fun convert(text: String): String {
         }
     }
 
+    fun String.dealExtra(): String {
+        val ext = Regex(" +ext ?\\{\n([\\s\\S]+)\n +}")
+        return this.replace(ext) {
+            it.value.replace(Regex("(\\w+) = (.+)"), "extra[\"$1\"] = $2")
+        }.replace(ext, "$1")
+    }
+
+    val list: MutableList<String> = mutableListOf()
+
+    fun String.dealExtraUser(): String {
+        val use = Regex("(i|testI|androidTestI|debugI)mplementation\\(\"\\w+:\\w+:\$(\\w+)\"\\)")
+        return this.replace(use) {
+            if (it.value !in list) {
+                it.value.replace(use, "val $1: String by extra\n").apply { list += this } + it.value
+            } else it.value
+        }
+    }
+
+
     val convertedText = text
         .replaceApostrophes()
         .replaceDefWithVal()
@@ -608,6 +627,8 @@ fun convert(text: String): String {
         .convertExtToExtra()
         .addParenthesisToId()
         .replaceColonWithEquals()
+        .dealExtra()
+        .dealExtraUser()
 
     println("[${currentTimeFormatted()}] -- Starting conversion.. ")
     println("Success!")

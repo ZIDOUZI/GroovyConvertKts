@@ -53,8 +53,8 @@ fun ExtendFileDialog(
     lookAndFeel?.let { UIManager.setLookAndFeel(it) }
         ?: UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
-    val f = JFrame(title)
-    f.iconImage = ImageIO.read(File(""))
+//    val f = JFrame(title)
+//    f.iconImage = ImageIO.read(File(""))//TODO: 实现图标
     val j = JFileChooser(dir ?: getFileSystemView().defaultDirectory.path)
     j.dialogTitle = title
     j.isMultiSelectionEnabled = chooseMode.value % 2 != 0
